@@ -1,0 +1,90 @@
+@import url("https://pro.fontawesome.com/releases/v5.10.0/css/all.css");
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+* {
+    font-feature-settings: "kern"off;
+    -webkit-font-kerning: none;
+    font-kerning: none;
+    text-rendering: optimizeLegibility;
+    box-sizing: border-box;
+    word-break: break-word;
+    outline: none;
+    text-decoration: none;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+
+    -ms-scroll-chaining: none;
+    overscroll-behavior: none;
+}
+
+body {
+    background-color: rgb(252, 252, 252);
+    font-family: 'Poppins',
+        sans-serif;
+    color: #111;
+}
+
+a {
+    color: #28007b
+}
+
+.navbar-light .navbar-nav .custom_btn {
+    position: relative;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    -webkit-box-align: center;
+    align-items: center;
+    cursor: pointer;
+    min-height: 40px;
+    color: rgb(255, 255, 255);
+    -webkit-user-drag: none;
+    user-select: none;
+    background-color: #28007b;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    border-radius: 4px;
+    transition: box-shadow 200ms ease-in-out 0s,
+        transform 200ms ease-in-out 0s;
+    color: #fff !important;
+    text-transform: capitalize;
+
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #28007b;
+    margin: 0px 10px;
+}
+
+
+
+.navbar-brand img {
+    width: 200px;
+    position: absolute;
+    top: 10px
+}
+
+.navbar-dark .navbar-brand {
+    color: #111;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.navbar-light .navbar-nav .custom_btn:hover {
+    background-color: #08c79c;
+    color: #fff;
+}
+
+.btn-dark {
+    background-color: #28007b !important;
+}
+
+.btn-dark:hover {
+    background-color: #08c79c !important;
+    color: #fff;
+    border: 1px solid #0a9272;
+}

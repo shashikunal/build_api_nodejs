@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const request = require("request");
 const { body, validationResult } = require("express-validator");
 const auth = require("../../Middleware/auth");
 const Profile = require("../../Models/Profile");
 const User = require("../../Models/User");
+const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = require("../../Config");
 
 //@Route---------GET-----api/profile/me
 //@DESC ---------GET USER PROFILE
@@ -204,4 +206,123 @@ router.put(
     }
   }
 );
+
+//@Route---------DELETE-----api/profile/experience:exp_id
+//@DESC ---------DELETE EXPERIENCE FROM PROFILE
+//@ACCESS -------PRIVATE
+
+router.delete("/experience/:exp_id", auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    //get remove index
+    const removeIndex = profile.experience
+      .map((item) => item.id)
+      .indexOf(req.params.exp_id);
+    profile.experience.splice(removeIndex, 1);
+    await profile.save();
+    res.json(profile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+
+/*===============================PROFILE EDUCATION ======================================*/
+//@Route---------PUT-----api/profile/education
+//@DESC ---------ADD PROFILE EDUCATION
+//@ACCESS -------PRIVATE
+
+router.put(
+  "/education",
+  [
+    auth,
+    [
+      body("school", "School is Required").not().isEmpty(),
+      body("degree", "Degree is Required").not().isEmpty(),
+      body("fieldofstudy", "field of study  is Required").not().isEmpty(),
+      body("from", "From Date is Required").not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description,
+    } = req.body;
+    const newEdu = {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description,
+    };
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+      profile.education.unshift(newEdu);
+      await profile.save();
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("SERVER ERROR");
+    }
+  }
+);
+
+//@Route---------DELETE-----api/profile/education:edu_id
+//@DESC ---------DELETE education FROM PROFILE
+//@ACCESS -------PRIVATE
+
+router.delete("/education/:edu_id", auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    //get remove index
+    const removeIndex = profile.education
+      .map((item) => item.id)
+      .indexOf(req.params.edu_id);
+    profile.education.splice(removeIndex, 1);
+    await profile.save();
+    res.json(profile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+/*===============================END OF PROFILE EDUCATION ===============================*/
+
+/*=========================GITHUB REPO STARTS HERE======================================*/
+//@Route---------GET-----api/profile/github/:username
+//@DESC ---------GET USER repos from github
+//@ACCESS -------PUBLIC
+router.get("/github/:username", (req, res) => {
+  try {
+    const options = {
+      uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&
+      sort=created:asc&client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}
+      `,
+      method: "GET",
+      headers: { "user-agent": "node.js" },
+    };
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      if (response.statusCode !== 200) {
+        res.status(404).json({ msg: "no Github profile found" });
+      }
+      res.json(JSON.parse(body));
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+/*=========================GITHUB REPO ENDS HERE========================================*/
 module.exports = router;

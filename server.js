@@ -1,5 +1,6 @@
 const express = require("express");
 const { connect } = require("mongoose");
+const cors = require("cors");
 const { success, error } = require("consola");
 
 const { DB, PORT } = require("./Config");
@@ -31,6 +32,7 @@ let StartApp = async () => {
     error({ message: `unable to connect mongodb`, badge: true });
   }
 };
+app.use(cors());
 
 //define routes
 app.use("/api/users", require("./Routes/Api/users"));

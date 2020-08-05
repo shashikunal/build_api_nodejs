@@ -16,13 +16,18 @@ const router = express.Router();
 router.get("/", auth, async (req, res) => {
   try {
     let user = await User.findById(req.user.id).select("-password");
+    console.log(user);
     res.json(user);
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Server Error");
   }
 });
+
 // @POST ROUTE
+//@Route---------POST-----api/auth
+//@DESC ---------TEST ROUTE
+//@ACCESS -------Private
 router.post(
   "/",
   [
@@ -41,22 +46,27 @@ router.post(
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        return res.status(401).json({ msg: "Email not found please Register" });
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Email not found please Register" }] });
       }
+
       let isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ mes: "Invalid Password!" });
+        return res.status(400).json({ errors: [{ msg: "Invalid Password!" }] });
       }
 
       let payload = {
-        id: user.id,
+        user: {
+          id: user.id,
+        },
       };
       jwt.sign(payload, SECRET, { expiresIn: 360000 }, (err, token) => {
         if (err) throw err;
         res.json({ token });
       });
     } catch (error) {
-      res.status(401).json(error);
+      res.status(500).json(error);
     }
   }
 );
