@@ -88,3 +88,134 @@ a {
     color: #fff;
     border: 1px solid #0a9272;
 }
+
+
+.SpinnerBlock {
+    min-height: 100vh;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.spinner {
+    width: 1.5em;
+}
+
+span {
+    display: block;
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+    width: 100%;
+}
+
+circle:nth-of-type(2) {
+    animation: spin 3s linear infinite;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    transform-origin: 50% 50%;
+    transform: rotate(-.25turn);
+}
+
+svg {
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.topSpinner {
+    width: 6em;
+}
+
+.middleSpinner {
+    width: 3em;
+}
+
+@keyframes spin {
+    0% {
+        stroke-dashoffset: 1;
+        transform: rotate(-.25turn);
+    }
+
+    50% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: -1;
+        transform: rotate(.75turn);
+    }
+}
+
+/* profile css */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #BA68C8
+}
+
+.profile-button {
+    background: rgb(99, 39, 120);
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #682773
+}
+
+.profile-button:focus {
+    background: #682773;
+    box-shadow: none
+}
+
+.profile-button:active {
+    background: #682773;
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
+}
+
+.profile_pic {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 100%;
+    padding: 0;
+    position: absolute;
+    left: -4px;
+    top: 4px;
+}
+
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    border-radius: 7px;
+    object-fit: cover;
+}
+
+.profile_custom_pic {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    background: #28007b61;
+    color: #fff;
+    padding: 6px;
+}

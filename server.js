@@ -1,21 +1,26 @@
 const express = require("express");
 const { connect } = require("mongoose");
-const cors = require("cors");
 const { success, error } = require("consola");
+const path = require("path");
 
 const { DB, PORT } = require("./Config");
 var bodyParser = require("body-parser");
 
 const app = express();
+
 app.use(express.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use("/public/", express.static(path.join(__dirname, "../public")));
+
 let StartApp = async () => {
   try {
     await connect(DB, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     });
     success({ message: `successfully database connected ${DB}`, badge: true });
     app.listen(PORT, (err) => {
@@ -32,7 +37,6 @@ let StartApp = async () => {
     error({ message: `unable to connect mongodb`, badge: true });
   }
 };
-app.use(cors());
 
 //define routes
 app.use("/api/users", require("./Routes/Api/users"));

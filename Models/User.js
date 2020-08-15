@@ -17,7 +17,7 @@ let UserSchema = new Schema(
       required: true,
     },
     avatar: {
-      type: String,
+      type: [""],
     },
   },
   { timestamps: true }

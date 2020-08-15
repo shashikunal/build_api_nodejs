@@ -5,6 +5,7 @@ const ProfileSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+
     company: {
       type: String,
     },
@@ -39,6 +40,36 @@ const ProfileSchema = new Schema(
           require: true,
         },
         location: {
+          type: String,
+          require: true,
+        },
+        from: {
+          type: Date,
+          required: true,
+        },
+        to: {
+          type: Date,
+        },
+        current: {
+          type: Boolean,
+          default: false,
+        },
+        description: {
+          type: String,
+        },
+      },
+    ],
+    education: [
+      {
+        school: {
+          type: String,
+          require: true,
+        },
+        degree: {
+          type: String,
+          require: true,
+        },
+        fieldofstudy: {
           type: String,
           require: true,
         },

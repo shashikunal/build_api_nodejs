@@ -5,7 +5,19 @@ const { body, validationResult } = require("express-validator");
 const auth = require("../../Middleware/auth");
 const Profile = require("../../Models/Profile");
 const User = require("../../Models/User");
+const Post = require("../../Models/Post");
 const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = require("../../Config");
+
+//multer and cloudinary
+const multer = require("multer");
+const cloudinary = require("../../Config/cloudinaryConfig");
+const uploadPhoto = require("../../Config/multer");
+
+const upload = multer({
+  storage: uploadPhoto.storage,
+});
+// console.log(cloudinary);
+// console.log(upload);
 
 //@Route---------GET-----api/profile/me
 //@DESC ---------GET USER PROFILE
@@ -96,8 +108,8 @@ router.post(
       profile = new Profile(profileFields);
       await profile.save();
       return res.json(profile);
-    } catch (error) {
-      console.error(error.message);
+    } catch (err) {
+      console.error(err.message);
       res.status(500).send("SERVER ERROR");
     }
   }
@@ -111,8 +123,8 @@ router.get("/", async (req, res) => {
   try {
     let profiles = await Profile.find().populate("user", ["name", "avatar"]);
     res.json(profiles);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("SERVER ERROR");
   }
 });
@@ -131,8 +143,8 @@ router.get("/user/:user_id", async (req, res) => {
         .status(401)
         .json({ msg: "There is no profile for this user.." });
     res.json(profile);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     if (error.kind == "ObjectId") {
       return res.status(401).json({ msg: "Profile not found" });
     }
@@ -147,13 +159,14 @@ router.get("/user/:user_id", async (req, res) => {
 router.delete("/", auth, async (req, res) => {
   try {
     /*-----@TODO - REMOVE USER PROFILE ------*/
+    await Post.deleteMany({ user: req.user.id });
     /*-----@USER - REMOVE USER --------------*/
     await Profile.findOneAndRemove({ user: req.user.id });
     //remove user
     await User.findOneAndRemove({ _id: req.user.id });
     res.json({ msg: "user deleted" });
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("SERVER ERROR");
   }
 });
@@ -200,8 +213,9 @@ router.put(
       const profile = await Profile.findOne({ user: req.user.id });
       profile.experience.unshift(newExp);
       await profile.save();
-    } catch (error) {
-      console.error(error.message);
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
       res.status(500).send("SERVER ERROR");
     }
   }
@@ -221,8 +235,8 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
     profile.experience.splice(removeIndex, 1);
     await profile.save();
     res.json(profile);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("SERVER ERROR");
   }
 });
@@ -271,8 +285,9 @@ router.put(
       const profile = await Profile.findOne({ user: req.user.id });
       profile.education.unshift(newEdu);
       await profile.save();
-    } catch (error) {
-      console.error(error.message);
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
       res.status(500).send("SERVER ERROR");
     }
   }
@@ -292,8 +307,8 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
     profile.education.splice(removeIndex, 1);
     await profile.save();
     res.json(profile);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("SERVER ERROR");
   }
 });
@@ -319,10 +334,35 @@ router.get("/github/:username", (req, res) => {
       }
       res.json(JSON.parse(body));
     });
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("SERVER ERROR");
   }
 });
 /*=========================GITHUB REPO ENDS HERE========================================*/
+
+router.put(
+  "/upload-photo/:id",
+  auth,
+  upload.single("avatar"),
+  async (req, res) => {
+    try {
+      var cloudPhoto = await cloudinary.v2.uploader.upload(req.file.path);
+      const profile = await Profile.findOne({ user: req.user.id });
+      let user = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+          avatar: [cloudPhoto],
+        },
+        { new: true }
+      );
+      await (await user).save;
+      res.json(profile);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("SERVER ERROR");
+    }
+  }
+);
+
 module.exports = router;

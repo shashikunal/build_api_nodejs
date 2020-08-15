@@ -3,10 +3,23 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
-function Header({ auth: { isAuthenticated, loading }, logout }) {
+function Header({ auth: { isAuthenticated, loading, user }, logout }) {
   const AuthLinks = (
     <Fragment>
-      <li className="nav-item">
+      <li className="nav-item position-relative">
+        <a className="nav-link" to="/">
+          <img
+            src={
+              user && user.avatar[0].url
+                ? user && user.avatar[0].url
+                : user && user.avatar[0]
+            }
+            alt="user"
+            className="profile_pic"
+          />
+        </a>
+      </li>
+      <li className="nav-item ">
         <a
           className="nav-link btn btn-dark text-white"
           onClick={logout}
