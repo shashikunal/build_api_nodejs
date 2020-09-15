@@ -18,6 +18,7 @@ const UpdateProfile = ({
     status: "",
     skills: "",
     githubusername: "",
+    wakatimeusername: "",
     bio: "",
     twitter: "",
     facebook: "",
@@ -42,6 +43,8 @@ const UpdateProfile = ({
         skills: loading || !profile.skills ? "" : profile.skills.join(","),
         githubusername:
           loading || !profile.githubusername ? "" : profile.githubusername,
+        wakatimeusername:
+          loading || !profile.wakatimeusername ? "" : profile.wakatimeusername,
         bio: loading || !profile.bio ? "" : profile.bio,
         twitter: loading || !profile.twitter ? "" : profile.twitter,
         facebook: loading || !profile.facebook ? "" : profile.facebook,
@@ -59,6 +62,7 @@ const UpdateProfile = ({
     bio,
     status,
     githubusername,
+    wakatimeusername,
     skills,
     youtube,
     facebook,
@@ -191,6 +195,21 @@ const UpdateProfile = ({
                       value={githubusername}
                       onChange={(e) => handleChange(e)}
                     />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="labels">WakaTime Profile</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="wakatime Username"
+                      name="wakatimeusername"
+                      value={wakatimeusername}
+                      onChange={(e) => handleChange(e)}
+                    />
+                    <p className="text-muted">
+                      for coding activities please check{" "}
+                      <a href="https://wakatime.com/">wakatime </a>
+                    </p>
                   </div>
                   <div className="col-md-12">
                     <label className="labels">Bio</label>

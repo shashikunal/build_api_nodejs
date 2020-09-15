@@ -6,7 +6,11 @@ const auth = require("../../Middleware/auth");
 const Profile = require("../../Models/Profile");
 const User = require("../../Models/User");
 const Post = require("../../Models/Post");
-const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = require("../../Config");
+const {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  WAKATIME_KEY,
+} = require("../../Config");
 
 //multer and cloudinary
 const multer = require("multer");
@@ -48,8 +52,8 @@ router.post(
   [
     auth,
     [
-      body("status", "Status is Required").not().isEmpty(),
-      body("skills", "Skills are required").not().isEmpty(),
+      body("status", "status is required").not().isEmpty(),
+      body("skills", "skills are required").not().isEmpty(),
     ],
   ],
   async (req, res) => {
@@ -64,6 +68,7 @@ router.post(
       bio,
       status,
       githubusername,
+      wakatimeusername,
       skills,
       youtube,
       facebook,
@@ -83,6 +88,7 @@ router.post(
 
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
+    if (wakatimeusername) profileFields.wakatimeusername = wakatimeusername;
     if (skills) {
       profileFields.skills = skills.split(",").map((skill) => skill.trim());
     }
@@ -121,7 +127,11 @@ router.post(
 
 router.get("/", async (req, res) => {
   try {
-    let profiles = await Profile.find().populate("user", ["name", "avatar"]);
+    let profiles = await Profile.find().populate("user", [
+      "name",
+      "avatar",
+      "email",
+    ]);
     res.json(profiles);
   } catch (err) {
     console.error(err.message);
@@ -137,7 +147,7 @@ router.get("/user/:user_id", async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.params.user_id,
-    }).populate("user", ["name", "avatar"]);
+    }).populate("user", ["name", "avatar", "email"]);
     if (!profile)
       return res
         .status(401)
@@ -251,10 +261,10 @@ router.put(
   [
     auth,
     [
-      body("school", "School is Required").not().isEmpty(),
-      body("degree", "Degree is Required").not().isEmpty(),
-      body("fieldofstudy", "field of study  is Required").not().isEmpty(),
-      body("from", "From Date is Required").not().isEmpty(),
+      body("school", "school is required").not().isEmpty(),
+      body("degree", "degree is required").not().isEmpty(),
+      body("fieldofstudy", "field of study  is required").not().isEmpty(),
+      body("from", "from Date is required").not().isEmpty(),
     ],
   ],
   async (req, res) => {
@@ -321,18 +331,19 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
 router.get("/github/:username", (req, res) => {
   try {
     const options = {
-      uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&
-      sort=created:asc&client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}
+      uri: `https://api.github.com/users/${req.params.username}/repos?per_page=10&
+      sort=pushed&direction=full_name:desc&client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}
       `,
       method: "GET",
       headers: { "user-agent": "node.js" },
     };
+
     request(options, (error, response, body) => {
       if (error) console.error(error);
-      if (response.statusCode !== 200) {
-        res.status(404).json({ msg: "no Github profile found" });
+      if (response.statusCode === 404) {
+        res.status(404).json({ msg: "no github profile found" });
       }
-      res.json(JSON.parse(body));
+      return res.json(JSON.parse(body));
     });
   } catch (err) {
     console.error(err.message);
@@ -340,6 +351,91 @@ router.get("/github/:username", (req, res) => {
   }
 });
 /*=========================GITHUB REPO ENDS HERE========================================*/
+
+/*===================wakatime Api ===================================*/
+router.get("/wakatime/:username", (req, res) => {
+  try {
+    let options = {
+      uri: `https://wakatime.com/api/v1/users/${req.params.username}`,
+      // Base-64 encode the API Key
+      // https://wakatime.com/developers#introduction
+      headers: {
+        Authorization: `Basic ${Buffer.from(WAKATIME_KEY).toString("base64")}`,
+        method: "GET",
+        "user-agent": "node.js",
+      },
+    };
+
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      if (response.statusCode === 404) {
+        res.status(404).json({ msg: "no Wakatime profile found" });
+      }
+      return res.json(JSON.parse(body));
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+
+/*====================wakatime stats =========================*/
+
+router.get("/wakatime/:username/stats", (req, res) => {
+  try {
+    let options = {
+      uri: `https://wakatime.com/api/v1/users/${req.params.username}/stats`,
+      // Base-64 encode the API Key
+      // https://wakatime.com/developers#introduction
+      headers: {
+        Authorization: `Basic ${Buffer.from(WAKATIME_KEY).toString("base64")}`,
+        method: "GET",
+        "user-agent": "node.js",
+      },
+    };
+
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      if (response.statusCode === 404) {
+        res.status(404).json({ msg: "no Wakatime profile found" });
+      }
+      return res.json(JSON.parse(body));
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+
+/*--------------------------user agent -----------------*/
+
+router.get("/wakatime/:username/user_agents", (req, res) => {
+  try {
+    let options = {
+      uri: `https://wakatime.com/api/v1/users/${req.params.username}/user_agents`,
+      // Base-64 encode the API Key
+      // https://wakatime.com/developers#introduction
+      headers: {
+        Authorization: `Basic ${Buffer.from(WAKATIME_KEY).toString("base64")}`,
+        method: "GET",
+        "user-agent": "node.js",
+      },
+    };
+
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      if (response.statusCode === 404) {
+        res.status(404).json({ msg: "no Wakatime profile found" });
+      }
+      return res.json(JSON.parse(body));
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("SERVER ERROR");
+  }
+});
+
+//photo upload
 
 router.put(
   "/upload-photo/:id",
@@ -364,5 +460,17 @@ router.put(
     }
   }
 );
+
+/*---------------SEARCH OPTIONS --------------------*/
+router.get("/search/:skills", async (req, res) => {
+  try {
+    let regex = new RegExp(req.params.skills, "i");
+    let skills = await Profile.find({ skills: regex });
+    res.json(skills);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("SERVER ERROR");
+  }
+});
 
 module.exports = router;

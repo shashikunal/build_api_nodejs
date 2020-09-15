@@ -20,6 +20,12 @@ import EditProfile from "./Components/profile-forms/Edit-Profile";
 import AddExperience from "./Components/profile-forms/AddExperience";
 import AddEducation from "./Components/profile-forms/AddEducation";
 import UploadPhoto from "./Components/profile-forms/UploadPhoto";
+import ForgotPassword from "./Components/auth/ForgotPassword";
+import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
+import Profiles from "./Components/profiles/Profiles";
+import Profile from "./Components/profile/Profile";
+import Posts from "./Components/posts/Posts";
+import AddPost from "./Components/posts/AddPost";
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -34,12 +40,33 @@ const App = () => {
       <Router>
         <div>
           <Header />
-          <ToastContainer />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+          {/* Same as */}
+
           <Route exact path="/" component={Landing} />
           <section className="container my-4">
             <Switch>
               <Route path="/login" exact component={Login} />
               <Route path="/register" exact component={Register} />
+              <Route path="/reset-password" exact component={ForgotPassword} />
+              <Route path="/profiles" exact component={Profiles} />
+              <Route path="/profile/:id" exact component={Profile} />
+              {/* <Route path="/posts" exact component={Posts} /> */}
+              <Route
+                path="/api/users/reset-password/:id"
+                exact
+                component={ResetPasswordForm}
+              />
               <PrivateRoute path="/dashboard" exact component={Dashboard} />
               <PrivateRoute
                 path="/create-profile"
@@ -66,6 +93,8 @@ const App = () => {
                 exact
                 component={UploadPhoto}
               />
+              <PrivateRoute path="/posts" exact component={Posts} />
+              <PrivateRoute path="/add-post" exact component={AddPost} />
             </Switch>
           </section>
         </div>

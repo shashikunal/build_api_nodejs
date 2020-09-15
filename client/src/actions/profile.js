@@ -6,7 +6,10 @@ import {
   UPDATE_PROFILE,
   ACCOUNT_DELETED,
   CLEAR_PROFILE,
-  PHOTO_UPLOADED,
+  GET_PROFILES,
+  GET_REPOS,
+  GET_WAKATIME,
+  GET_WAKATIME_STATS,
 } from "./types";
 import { toast } from "react-toastify";
 
@@ -192,6 +195,96 @@ export const updatePhoto = (id, formData, history) => async (dispatch) => {
         dispatch(setAlert(toast.error(err.msg)));
       });
     }
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// GET ALL PROFILE
+export const getProfiles = () => async (dispatch) => {
+  dispatch({
+    type: CLEAR_PROFILE,
+  });
+  try {
+    const res = await axios.get("/api/profile");
+    dispatch({
+      type: GET_PROFILES,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+//GET  PROFILE BY ID
+export const getProfileByID = (userId) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/user/${userId}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+//GET  GITHUB REPOSITORY
+export const getGithubRepos = (username) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/github/${username}`);
+    if (res.status !== 200) {
+      dispatch("No items found.");
+    } else {
+      dispatch({
+        type: GET_REPOS,
+        payload: res.data,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status,
+      },
+    });
+  }
+};
+
+//GET  WAKATIME ACTIVITIES
+export const getWakaTime = (username) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/wakatime/${username}`);
+    dispatch({
+      type: GET_WAKATIME,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+//GET  WAKATIME Stats
+export const getWakaTimeStats = (username) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/wakatime/${username}/stats`);
+    dispatch({
+      type: GET_WAKATIME_STATS,
+      payload: res.data,
+    });
+  } catch (err) {
     dispatch({
       type: PROFILE_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status },

@@ -32,7 +32,7 @@ router.post(
   "/",
   [
     [
-      body("email", "Please enter valid Email Address").isEmail(),
+      body("email", "Please enter valid email address").isEmail(),
       body("password", "Password is Required").exists(),
     ],
   ],
@@ -48,7 +48,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "Email not found please Register" }] });
+          .json({ errors: [{ msg: "Email not found please register" }] });
       }
 
       let isMatch = await bcrypt.compare(password, user.password);
@@ -70,4 +70,5 @@ router.post(
     }
   }
 );
+
 module.exports = router;

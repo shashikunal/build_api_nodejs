@@ -37,8 +37,6 @@ const AddExperience = ({
   let handleSubmit = (e) => {
     e.preventDefault();
     addExperience(formData, history);
-    // toast.success("Experience added");
-    // history.push("/dashboard");
   };
 
   return (

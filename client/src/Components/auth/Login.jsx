@@ -67,6 +67,9 @@ const Login = ({ login, isAuthenticated }) => {
                 </button>
               </div>
               <div className="form-group">
+                <Link to="/reset-password">
+                  <p className="text-right">Forgot Password?</p>
+                </Link>
                 <Link to="/register">
                   Don't have an account Please
                   <button className="btn btn-outline-dark btn-sm">

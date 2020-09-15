@@ -12,7 +12,11 @@ const User = require("../../Models/User");
 
 router.post(
   "/",
-  [auth, [body("text", "text is required").not().isEmpty()]],
+  [
+    auth,
+    [body("title", "title is required").not().isEmpty()],
+    [body("text", "text is required").not().isEmpty()],
+  ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -22,12 +26,14 @@ router.post(
       let user = await User.findById(req.user.id).select("-password");
       console.log(user);
       let newPost = new Post({
+        title: req.body.title,
         text: req.body.text,
+        tags: req.body.tags,
         name: user.name,
         avatar: user.avatar,
         user: req.user.id,
       });
-      const post = newPost.save();
+      const post = await newPost.save();
       res.json(post);
     } catch (error) {
       console.error(error);

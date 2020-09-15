@@ -6,6 +6,21 @@ import { logout } from "../../actions/auth";
 function Header({ auth: { isAuthenticated, loading, user }, logout }) {
   const AuthLinks = (
     <Fragment>
+      <li className="nav-item">
+        <Link className="btn btn-dark" to="/add-post">
+          Write a post
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link className="nav-link" to="/posts">
+          Posts
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link className="nav-link" to="/profiles">
+          Developers
+        </Link>
+      </li>
       <li className="nav-item position-relative">
         <a className="nav-link" to="/">
           <img
@@ -32,10 +47,15 @@ function Header({ auth: { isAuthenticated, loading, user }, logout }) {
   );
   const GuestLinks = (
     <Fragment>
+      {/* <li className="nav-item">
+        <Link className="nav-link" to="/posts">
+          Posts
+        </Link>
+      </li> */}
       <li className="nav-item">
-        <a className="nav-link" href="#">
+        <Link className="nav-link" to="/profiles">
           Developers
-        </a>
+        </Link>
       </li>
       <li className="nav-item">
         <Link className="nav-link" to="/login">
@@ -55,7 +75,7 @@ function Header({ auth: { isAuthenticated, loading, user }, logout }) {
         <nav className="navbar navbar-expand-lg navbar-light bg-white ">
           <div className="container">
             <Link className="navbar-brand" to="/">
-              <img src="logo.png" alt="logo" />
+              <img src="../logo.png" alt="logo" />
             </Link>
             <button
               className="navbar-toggler"
