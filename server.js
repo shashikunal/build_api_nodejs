@@ -1,5 +1,6 @@
 const express = require("express");
 const { connect } = require("mongoose");
+const cors = require("cors");
 const { success, error } = require("consola");
 const path = require("path");
 
@@ -10,6 +11,7 @@ const app = express();
 
 app.use(express.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/public/", express.static(path.join(__dirname, "../public")));

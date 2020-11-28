@@ -6,6 +6,7 @@ const auth = require("../../Middleware/auth");
 const Profile = require("../../Models/Profile");
 const User = require("../../Models/User");
 const Post = require("../../Models/Post");
+
 const {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,

@@ -106,8 +106,7 @@ router.put("/like/:id", auth, async (req, res) => {
     let post = await Post.findById(req.params.id);
 
     if (
-      post.likes.filter((like) => like.user.toString() === req.user.id).length >
-      0
+      post.likes.filter(like => like.user.toString() === req.user.id).length > 0
     ) {
       return res.status(400).json({ msg: "Post already liked" });
     }
@@ -130,14 +129,14 @@ router.put("/unlike/:id", auth, async (req, res) => {
     let post = await Post.findById(req.params.id);
 
     if (
-      post.likes.filter((like) => like.user.toString() === req.user.id)
-        .length === 0
+      post.likes.filter(like => like.user.toString() === req.user.id).length ===
+      0
     ) {
       return res.status(400).json({ msg: "Post has not yet been liked" });
     }
 
     let removeIndex = post.likes
-      .map((like) => like.user.toString())
+      .map(like => like.user.toString())
       .indexOf(req.user.id);
     post.likes.splice(removeIndex, 1);
 
@@ -161,6 +160,7 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
     try {
       let user = await User.findById(req.user.id).select("-password");
       let post = await Post.findById(req.params.id);
@@ -190,7 +190,7 @@ router.delete("/comments/:id/:comment_id", auth, async (req, res) => {
     let post = await Post.findById(req.params.id);
     //pull out comments
     const comment = post.comments.find(
-      (comment) => comment.id === req.params.comment_id
+      comment => comment.id === req.params.comment_id
     );
     //make sure comments exists
     if (!comment) {
@@ -202,7 +202,7 @@ router.delete("/comments/:id/:comment_id", auth, async (req, res) => {
     }
     //get remove index
     const removeIndex = post.comments
-      .map((comment) => comment.user.toString())
+      .map(comment => comment.user.toString())
       .indexOf(req.user.id);
     post.comments.splice(removeIndex, 1);
     await post.save();
